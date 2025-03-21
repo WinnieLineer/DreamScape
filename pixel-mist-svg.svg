@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 40">
+  <!-- 第一層霧 -->
+  <g opacity="0.6">
+    <rect x="0" y="30" width="4" height="4" fill="#f0f0f0"/>
+    <rect x="8" y="32" width="4" height="4" fill="#f0f0f0"/>
+    <rect x="16" y="28" width="4" height="4" fill="#f0f0f0"/>
+    <rect x="24" y="30" width="6" height="4" fill="#f0f0f0"/>
+    <rect x="34" y="28" width="4" height="4" fill="#f0f0f0"/>
+    <rect x="42" y="32" width="4" height="4" fill="#f0f0f0"/>
+    <rect x="50" y="30" width="4" height="4" fill="#f0f0f0"/>
+    <rect x="58" y="28" width="4" height="4" fill="#f0f0f0"/>
+    <rect x="66" y="32" width="6" height="4" fill="#f0f0f0"/>
+    <rect x="76" y="30" width="4" height="4" fill="#f0f0f0"/>
+    <rect x="84" y="28" width="4" height="4" fill="#f0f0f0"/>
+    <rect x="92" y="32" width="4" height="4" fill="#f0f0f0"/>
+  </g>
+  
+  <!-- 第二層霧 -->
+  <g opacity="0.8">
+    <rect x="4" y="34" width="6" height="6" fill="#e0e0e0"/>
+    <rect x="14" y="36" width="8" height="4" fill="#e0e0e0"/>
+    <rect x="26" y="34" width="6" height="6" fill="#e0e0e0"/>
+    <rect x="36" y="36" width="8" height="4" fill="#e0e0e0"/>
+    <rect x="48" y="34" width="6" height="6" fill="#e0e0e0"/>
+    <rect x="60" y="36" width="8" height="4" fill="#e0e0e0"/>
+    <rect x="72" y="34" width="6" height="6" fill="#e0e0e0"/>
+    <rect x="82" y="36" width="8" height="4" fill="#e0e0e0"/>
+    <rect x="94" y="34" width="6" height="6" fill="#e0e0e0"/>
+  </g>
+</svg>
