@@ -221,7 +221,10 @@
         </div>
         <div class="character"></div>
     </section>
-
+    <button onclick="document.querySelector('audio').play()">播放背景音樂</button>    <audio autoplay loop>
+        <source src="background-music.mp3" type="audio/mp3">
+        您的瀏覽器不支持音頻播放。
+    </audio>
     <script>
         // 手機選單切換
         document.querySelector('.menu-toggle').addEventListener('click', function() {
