@@ -4,201 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DreamScape Explorer</title>
+    <link rel="icon" type="image/svg+xml" href="src/assets/images/favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Noto+Sans+TC:wght@400&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', 'Noto Sans TC', sans-serif;
-        }
-
-        body {
-            overflow-x: hidden;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        /* 背景圖層 */
-        .hero-section {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            background: url('artwork.png') no-repeat center center/cover;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #FFFFFF;
-            text-align: center;
-            overflow: hidden;
-        }
-
-        /* 雲霧效果 */
-        .mist {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: url('Leonardo_Phoenix_10_A_fluffy_pixel_art_white_cloud_soft_and_ro_2__1_-removebg-preview.png') repeat-x;
-            opacity: 0.5;
-            animation: drift 60s linear infinite;
-        }
-
-        @keyframes drift {
-            0% { background-position: 0 0; }
-            100% { background-position: 2000px 0; }
-        }
-
-        /* 導航欄 */
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 20px 40px;
-            background: rgba(0, 0, 0, 0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 10;
-            transition: padding 0.3s ease;
-        }
-
-        .navbar .logo {
-            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
-            font-weight: bold;
-            color: #FFFFFF;
-        }
-
-        .navbar ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-        }
-
-        .navbar ul li a {
-            color: #FFFFFF;
-            text-decoration: none;
-            font-size: clamp(0.9rem, 1.5vw, 1rem);
-            transition: color 0.3s ease;
-        }
-
-        .navbar ul li a:hover {
-            color: #800000;
-        }
-
-        /* 導航選單按鈕（手機用） */
-        .menu-toggle {
-            display: none;
-            color: #FFFFFF;
-            font-size: 1.5rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        /* 標題和按鈕 */
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            padding: 0 20px;
-        }
-
-        .hero-content .subtitle {
-            font-size: clamp(1.2rem, 3vw, 1.5rem);
-            font-family: 'Noto Sans TC', sans-serif;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        .hero-content .title {
-            font-size: clamp(2rem, 8vw, 4.5rem);
-            font-weight: bold;
-            letter-spacing: 5px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
-            margin-bottom: 20px;
-        }
-
-        .hero-content .btn {
-            padding: 15px 40px;
-            font-size: clamp(0.9rem, 2vw, 1.125rem);
-            color: #FFFFFF;
-            background: transparent;
-            border: 2px solid #FFFFFF;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .hero-content .btn:hover {
-            background: #800000;
-            border-color: #800000;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.7);
-        }
-
-        /* 人物剪影 */
-        .character {
-            position: absolute;
-            bottom: 0px;
-            width: clamp(100px, 20vw, 200px);
-            height: clamp(300px, 30vw, 300px);
-            background: url('mp4-unscreen.gif') no-repeat center center/contain;
-            z-index: 1;
-        }
-
-        /* RWD 媒體查詢 */
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 15px 20px;
-            }
-
-            .navbar ul {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background: rgba(0, 0, 0, 0.8);
-                flex-direction: column;
-                padding: 20px;
-                gap: 15px;
-            }
-
-            .navbar ul.active {
-                display: flex;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-
-            .hero-content {
-                padding: 0 15px;
-            }
-
-            .character {
-                bottom: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .navbar {
-                padding: 10px 15px;
-            }
-
-            .hero-content .btn {
-                width: 100%;
-                padding: 12px 20px;
-            }
-
-            .character {
-                width: clamp(800px, 15vw, 150px);
-                height: clamp(300px, 25vw, 225px);
-                bottom: 10px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="src/css/styles.css">
 </head>
 <body>
     <!-- 導航欄 -->
@@ -206,8 +14,8 @@
         <div class="logo">DreamScape</div>
         <button class="menu-toggle">☰</button>
         <ul>
-            <li><a href="#">首頁</a></li>
-            <li><a href="#">關於我們</a></li>
+            <li><a href="index.html">首頁</a></li>
+            <li><a href="about.html">關於作者</a></li>
             <li><a href="#">探索地圖</a></li>
             <li><a href="#">聯繫我們</a></li>
         </ul>
@@ -221,15 +29,11 @@
         </div>
         <div class="character"></div>
     </section>
-    <button onclick="document.querySelector('audio').play()">播放背景音樂</button>    <audio autoplay loop>
-        <source src="background-music.mp3" type="audio/mp3">
+    <button id="music-control">播放背景音樂</button>
+    <audio id="bgMusic" muted autoplay loop>
+        <source src="src/assets/audio/ambient-music.mp3" type="audio/mp3">
         您的瀏覽器不支持音頻播放。
     </audio>
-    <script>
-        // 手機選單切換
-        document.querySelector('.menu-toggle').addEventListener('click', function() {
-            document.querySelector('.navbar ul').classList.toggle('active');
-        });
-    </script>
+    <script src="src/js/main.js"></script>
 </body>
 </html>

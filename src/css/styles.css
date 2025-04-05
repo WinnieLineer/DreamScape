@@ -1,0 +1,311 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', 'Noto Sans TC', sans-serif;
+}
+
+body {
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* 背景圖層 */
+.hero-section {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: url('../assets/images/hero-background.png') no-repeat center center/cover;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #FFFFFF;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* 雲霧效果 */
+.mist {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('../assets/images/cloud-mist.png') repeat-x;
+    opacity: 0.5;
+    animation: drift 60s linear infinite;
+}
+
+@keyframes drift {
+    0% { background-position: 0 0; }
+    100% { background-position: 2000px 0; }
+}
+
+/* 導航欄 */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+}
+
+.navbar .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+.navbar ul {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar ul li a {
+    color: #FFFFFF;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.navbar ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar ul li a[aria-current="page"] {
+    background-color: #800000;
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #FFFFFF;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* 標題和按鈕 */
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 20px;
+}
+
+.hero-content .subtitle {
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    font-family: 'Noto Sans TC', sans-serif;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.hero-content .title {
+    font-size: clamp(2rem, 8vw, 4.5rem);
+    font-weight: bold;
+    letter-spacing: 5px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+    margin-bottom: 20px;
+}
+
+.hero-content .btn {
+    padding: 15px 40px;
+    font-size: clamp(0.9rem, 2vw, 1.125rem);
+    color: #FFFFFF;
+    background: transparent;
+    border: 2px solid #FFFFFF;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hero-content .btn:hover {
+    background: #800000;
+    border-color: #800000;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.7);
+}
+
+/* 人物剪影 */
+.character {
+    position: absolute;
+    bottom: 0px;
+    width: clamp(100px, 20vw, 200px);
+    height: clamp(300px, 30vw, 300px);
+    background: url('../assets/images/character-silhouette.gif') no-repeat center center/contain;
+    z-index: 1;
+}
+
+/* RWD 媒體查詢 */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .navbar ul {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .navbar ul.active {
+        display: flex;
+    }
+
+    .menu-toggle {
+        display: block;
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+    }
+
+    .hero-content {
+        padding: 0 15px;
+    }
+
+    .character {
+        bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding: 10px 15px;
+    }
+
+    .hero-content .btn {
+        width: 100%;
+        padding: 12px 20px;
+    }
+
+    .character {
+        width: clamp(800px, 15vw, 150px);
+        height: clamp(300px, 25vw, 225px);
+        bottom: 10px;
+    }
+}
+
+/* 關於頁面樣式 */
+.about-section {
+    padding: 100px 20px;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../assets/images/hero-background.png') no-repeat center center/cover;
+    color: #FFFFFF;
+    min-height: 100vh;
+    margin-top: 60px; /* 為固定導航欄留出空間 */
+}
+
+.about-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.about-title {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #FFFFFF;
+}
+
+.about-content {
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.about-content p {
+    margin-bottom: 1.5em;
+}
+
+.about-content ul {
+    list-style-type: disc;
+    margin-left: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+.skills-section {
+    margin-top: 40px;
+}
+
+.skills-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #FFFFFF;
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.skill-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.skill-card:hover {
+    transform: translateY(-5px);
+}
+
+.skill-card h3 {
+    margin-bottom: 10px;
+    color: #FFFFFF;
+}
+
+.social-links {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.social-links a {
+    color: #FFFFFF;
+    text-decoration: none;
+    margin: 0 10px;
+    padding: 10px 20px;
+    border: 2px solid #FFFFFF;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.social-links a:hover {
+    background: #800000;
+    border-color: #800000;
+}
+
+@media (max-width: 768px) {
+    .about-container {
+        padding: 20px;
+    }
+
+    .about-title {
+        font-size: 2rem;
+    }
+
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .social-links a {
+        display: block;
+        margin: 10px auto;
+        max-width: 200px;
+    }
+} 
