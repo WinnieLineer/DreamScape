@@ -38,9 +38,26 @@ DreamScape Explorer is built with a focus on:
 - Cross-browser compatibility
 - Mobile-first approach
 
+## 🎵 AI-Powered Assets
+
+This project utilizes cutting-edge AI tools to create its immersive experience:
+
+### Music Generation
+- **Background Music**: Created using [Suno AI](https://suno.com/) for dreamy, ambient soundscapes
+- **Sound Effects**: AI-generated atmospheric sounds
+
+### Visual Elements
+- **Character Animation**: Generated using [Runway ML](https://runwayml.com/) for fluid, dream-like movements
+- **Background Removal**: Processed with [Remove.bg](https://www.remove.bg/) for clean, professional image editing
+- **Art Generation**: Created using [Leonardo AI](https://leonardo.ai/) for unique, dream-inspired visuals
+
 ## 🌟 Special Thanks
 
-- Background music: [Ambient Music](src/assets/audio/ambient-music.mp3)
+- **AI Tools**:
+  - [Suno AI](https://suno.com/) for music generation
+  - [Runway ML](https://runwayml.com/) for animation
+  - [Remove.bg](https://www.remove.bg/) for image processing
+  - [Leonardo AI](https://leonardo.ai/) for art generation
 - Visual assets: Custom designed for DreamScape
 - Inspiration: The endless possibilities of dreams
 
