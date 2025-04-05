@@ -1,122 +1,58 @@
 # DreamScape Explorer 🌌
 
-一個展示自動化開發和氛圍編碼的現代網頁專案範例。
+A dreamy exploration platform that takes you on a journey through the realms of imagination and creativity.
 
-## ✨ 專案特色
+## ✨ Features
 
-- 🎨 沉浸式視覺體驗
-- 🎵 互動式音樂播放
-- 📱 響應式設計
-- 🎭 動態雲霧效果
-- 🖥️ 現代化開發實踐
+- **Immersive Experience**: Dive into a world of dreams with stunning visuals and ambient sounds
+- **Interactive Elements**: Engage with dynamic animations and responsive design
+- **Responsive Layout**: Seamless experience across all devices
+- **Modern Design**: Clean, elegant interface with smooth transitions
+- **Accessibility**: Built with accessibility in mind for all users
 
-## 🛠️ 技術棧
+## 🚀 Getting Started
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/WinnieLineer/DreamScape.git
+   ```
+
+2. Open `index.html` in your favorite browser
+
+3. Start exploring the dreamscape!
+
+## 🛠️ Tech Stack
 
 - HTML5
-- CSS3 (Flexbox, Grid, Animations)
+- CSS3 (with modern features like Flexbox and Grid)
 - JavaScript (ES6+)
-- 模組化開發
-- 現代化專案結構
+- SVG for crisp, scalable graphics
+- Responsive design principles
 
-## 📁 專案結構
+## 🎨 Design Philosophy
 
-```
-DreamScape/
-├── index.html
-└── src/
-    ├── css/
-    │   └── styles.css
-    ├── js/
-    │   └── main.js
-    └── assets/
-        ├── images/
-        │   ├── hero-background.png
-        │   ├── cloud-mist.png
-        │   ├── character-silhouette.gif
-        │   ├── background-animation.gif
-        │   └── mist-effect.svg
-        └── audio/
-            └── ambient-music.mp3
-```
+DreamScape Explorer is built with a focus on:
+- User experience
+- Visual aesthetics
+- Performance optimization
+- Cross-browser compatibility
+- Mobile-first approach
 
-## 🚀 自動化特性
+## 🌟 Special Thanks
 
-1. **互動式音樂播放**
-   - 點擊頁面自動播放
-   - 按鈕控制播放/暫停
-   - 優雅的錯誤處理
+- Background music: [Ambient Music](src/assets/audio/ambient-music.mp3)
+- Visual assets: Custom designed for DreamScape
+- Inspiration: The endless possibilities of dreams
 
-2. **響應式設計**
-   - 自動適應不同設備
-   - 流暢的動畫過渡
-   - 優化的移動端體驗
+## 📝 License
 
-3. **動態效果**
-   - 自動運行的雲霧動畫
-   - 平滑的滾動效果
-   - 互動式元素過渡
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 💻 開發實踐
+## 👋 Connect with the Creator
 
-1. **模組化開發**
-   - CSS 樣式分離
-   - JavaScript 邏輯分離
-   - 資源文件組織
-
-2. **現代化架構**
-   - 清晰的目錄結構
-   - 資源優化管理
-   - 代碼組織最佳實踐
-
-3. **最佳實踐**
-   - 語義化 HTML
-   - 響應式設計
-   - 性能優化
-
-## 🎮 使用方式
-
-1. 克隆專案
-```bash
-git clone https://github.com/WinnieLin/DreamScape.git
-```
-
-2. 啟動本地服務器
-```bash
-python -m http.server 8000
-```
-
-3. 在瀏覽器中訪問
-```
-http://localhost:8000
-```
-
-## 🌟 氛圍編碼特色
-
-- 沉浸式的視覺設計
-- 互動式音樂控制
-- 流暢的動畫效果
-- 直觀的用戶界面
-- 情感化的交互體驗
-
-## 📝 開發日誌
-
-- 2024-04-05: 初始專案結構
-- 2024-04-05: 實現互動式音樂播放
-- 2024-04-05: 優化響應式設計
-- 2024-04-05: 重構專案結構
-
-## 🤝 貢獻指南
-
-歡迎提交 Pull Request 或提出 Issue！
-
-## 📄 授權
-
-MIT License
-
-## 👨‍💻 作者
-
-Winnie Lin
+- GitHub: [@WinnieLineer](https://github.com/WinnieLineer)
+- LinkedIn: [Winnie Lin](https://www.linkedin.com/in/winnielin2949/)
 
 ---
 
-> 這個專案展示了如何將自動化開發和氛圍編碼結合，創造出既實用又富有情感的網頁體驗。 
+Made with ❤️ in Taiwan 
