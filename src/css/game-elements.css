@@ -92,9 +92,11 @@
 }
 
 /* --- Pixel Pipe --- */
+/* --- Pixel Pipe --- */
 .pixel-pipe {
     width: 80px;
     height: 100px;
+    background-color: #00a800; /* Fallback */
     /* Hard Gradient for cylinder look */
     background: 
         linear-gradient(90deg, 
@@ -104,8 +106,9 @@
             #005d00 50%, #005d00 95%, /* Shadow */
             #000 95% /* Border Right */
         );
-    position: relative;
+    position: absolute; /* Was relative/absolute mix-up potentially? No, .element is absolute. */
     border: none;
+    z-index: 10; /* Force on top */
 }
 
 /* Pipe Rim */
@@ -116,6 +119,7 @@
     left: -5px; /** Wider than stem **/
     width: 90px; 
     height: 30px;
+    background-color: #00a800;
     background: 
         linear-gradient(90deg, 
             #000 4px, 
@@ -126,48 +130,22 @@
         );
     border-bottom: 4px solid #000;
     border-top: 4px solid #000;
+    z-index: 11;
 }
 
-/* --- Pixel Portal (Blue-Green Retro Style) --- */
+/* --- Pixel Portal (GIF Style) --- */
 .pixel-portal {
-    width: 120px; /* Doubled from 60px */
-    height: 180px; /* Doubled from 90px */
-    background: #000;
-    /* Pixel Art Frame using box-shadow */
-    box-shadow: 
-        inset 8px 8px 0 #00ffff, /* Scaled up border */
-        inset -8px -8px 0 #008080, 
-        8px 8px 0 #000,
-        0 0 20px #00ffff;
-    animation: portal-pulse 1.5s infinite alternate;
+    width: 180px; /* 3x size (60*3) */
+    height: 180px; /* Square for GIF */
+    background: url('../assets/images/portal.gif') no-repeat center center;
+    background-size: contain;
+    /* "Remove Background" effect: Screen blend mode makes black transparent */
+    mix-blend-mode: screen; 
     position: absolute;
-    overflow: hidden;
-    z-index: 4; /* Ensure visibility */
+    z-index: 5;
 }
 
+/* Remove old CSS drawing */
 .pixel-portal::after {
-    content: '';
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    right: 4px;
-    bottom: 4px;
-    background: repeating-linear-gradient(
-        0deg,
-        rgba(0, 255, 255, 0.2) 0px,
-        rgba(0, 255, 255, 0.2) 2px,
-        transparent 2px,
-        transparent 4px
-    );
-    animation: scanline 1s linear infinite;
-}
-
-@keyframes portal-pulse {
-    0% { transform: scale(1); box-shadow: inset 4px 4px 0 #00ffff, inset -4px -4px 0 #008080, 0 0 10px #00ffff; }
-    100% { transform: scale(1.05); box-shadow: inset 4px 4px 0 #e0ffff, inset -4px -4px 0 #00ced1, 0 0 20px #00ffff; }
-}
-
-@keyframes scanline {
-    from { background-position: 0 0; }
-    to { background-position: 0 20px; }
+    display: none;
 }
