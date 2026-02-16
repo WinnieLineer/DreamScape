@@ -93,53 +93,53 @@
 
 /* --- Pixel Pipe --- */
 /* --- Pixel Pipe --- */
+/* --- Pixel Pipe (Large) --- */
 .pixel-pipe {
-    width: 80px;
-    height: 100px;
+    width: 160px; /* 80 * 2 */
+    height: 200px; /* 100 * 2 */
     background-color: #00a800; /* Fallback */
     /* Hard Gradient for cylinder look */
     background: 
         linear-gradient(90deg, 
-            #000 4px, /* Border Left */
-            #78c068 4px, #78c068 15%, /* Highlight */
-            #00a800 15%, #00a800 50%, /* Mid */
-            #005d00 50%, #005d00 95%, /* Shadow */
-            #000 95% /* Border Right */
+            #000 8px, 
+            #78c068 8px, #78c068 15%, 
+            #00a800 15%, #00a800 50%, 
+            #005d00 50%, #005d00 95%, 
+            #000 95% 
         );
-    position: absolute; /* Was relative/absolute mix-up potentially? No, .element is absolute. */
+    position: absolute; 
     border: none;
-    z-index: 10; /* Force on top */
+    z-index: 10; 
 }
 
-/* Pipe Rim */
+/* Pipe Rim (Large) */
 .pixel-pipe::before {
     content: '';
     position: absolute;
-    top: -30px;
-    left: -5px; /** Wider than stem **/
-    width: 90px; 
-    height: 30px;
+    top: -60px; /* 30 * 2 */
+    left: -10px; /* Wider than stem */
+    width: 180px; /* 90 * 2 */
+    height: 60px; /* 30 * 2 */
     background-color: #00a800;
     background: 
         linear-gradient(90deg, 
-            #000 4px, 
-            #78c068 4px, #78c068 15%, 
+            #000 8px, 
+            #78c068 8px, #78c068 15%, 
             #00a800 15%, #00a800 50%, 
             #005d00 50%, #005d00 95%, 
             #000 95%
         );
-    border-bottom: 4px solid #000;
-    border-top: 4px solid #000;
+    border-bottom: 8px solid #000;
+    border-top: 8px solid #000;
     z-index: 11;
 }
 
-/* --- Pixel Portal (GIF Style) --- */
+/* --- Pixel Portal (GIF Style - Large) --- */
 .pixel-portal {
-    width: 180px; /* 3x size (60*3) */
-    height: 180px; /* Square for GIF */
+    width: 300px; 
+    height: 300px; 
     background: url('../assets/images/portal.gif') no-repeat center center;
     background-size: contain;
-    /* "Remove Background" effect: Screen blend mode makes black transparent */
     mix-blend-mode: screen; 
     position: absolute;
     z-index: 5;

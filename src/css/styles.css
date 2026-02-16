@@ -271,9 +271,69 @@ body {
 .explore-section {
     min-height: 100vh;
     padding: 100px 20px;
-    background-color: #222;
+    background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #533483);
+    background-size: 400% 400%;
+    animation: fantasy-bg 15s ease infinite;
     border-top: 4px solid #fff;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Fantasy Stars Overlay for Explore */
+.explore-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    opacity: 0.3;
+    animation: twinkle 5s infinite;
+}
+
+@keyframes fantasy-bg {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+/* Pipe Transition Overlay */
+.pipe-transition-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9999;
+    transform: translateY(100%); /* Start hidden (below) */
+    transition: transform 0.5s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pipe-transition-overlay.active {
+    transform: translateY(0);
+}
+
+.pipe-transition-overlay::after {
+    content: 'WARPING...';
+    color: #00e436;
+    font-size: 2rem;
+    font-family: 'Pixelify Sans', sans-serif;
+    animation: blink 0.5s infinite;
 }
 
 .explore-section h2, .contact-section h2 {

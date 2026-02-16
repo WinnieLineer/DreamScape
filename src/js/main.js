@@ -177,11 +177,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Physics
-        charY += velocityY;
-        
+        // Apply Gravity
         if (charY > groundLevel) {
-            velocityY -= gravity; 
-        } else {
+            velocityY -= gravity;
+        }
+
+        // --- Platform Collision (Pipe) ---
+        const pipe = document.getElementById('pipe');
+        let onPlatform = false;
+
+        if (pipe) {
+            const charRect = character.getBoundingClientRect();
+            const pipeRect = pipe.getBoundingClientRect();
+            
+            // 1. Horizontal Check
+            if (charRect.right > pipeRect.left + 15 && charRect.left < pipeRect.right - 15) {
+                
+                // 2. Vertical Check (Falling onto pipe)
+                // Calculate Pipe Top in % relative to screen height
+                // pipeRect.top is distance from top of screen.
+                // Screen Height = window.innerHeight
+                // Pipe Top from Bottom (px) = window.innerHeight - pipeRect.top
+                // Pipe Top from Bottom (%) = (window.innerHeight - pipeRect.top) / window.innerHeight * 100
+                
+                const pipeTopFromBottomPx = window.innerHeight - pipeRect.top;
+                const pipeTopPct = (pipeTopFromBottomPx / window.innerHeight) * 100;
+                
+                // Compare charY (feet position %) with pipeTopPct
+                // Tolerance: if near top and falling
+                if (Math.abs(charY - pipeTopPct) < 5 && velocityY <= 0) {
+                    onPlatform = true;
+                    charY = pipeTopPct; // Snap to top
+                    velocityY = 0;
+                    isJumping = false;
+                }
+            }
+        }
+
+        // Apply Velocity if not stuck on platform
+        // But if we snapped, we already set charY.
+        // If we are NOT on platform, we apply velocity.
+        if (!onPlatform) {
+             charY += velocityY;
+        }
+
+        // Ground Collision (Floor)
+        if (charY <= groundLevel) {
             charY = groundLevel;
             velocityY = 0;
             isJumping = false;
@@ -291,48 +332,68 @@ document.addEventListener('DOMContentLoaded', () => {
         let r1 = char.getBoundingClientRect();
         const r2 = el.getBoundingClientRect();
         
-        // Shrink character hitbox to avoid whitespace issues (visual boundary)
-        const shrinkFactorX = r1.width * 0.3; // 30% shrinking horizontally
-        const shrinkFactorY = r1.height * 0.2; // 20% shrinking vertically
+        // Define Hitboxes
+        // Body (General): Smaller than visual size
+        const shrinkX = r1.width * 0.4; 
+        const shrinkY = r1.height * 0.2;
         
-        r1 = {
-            left: r1.left + shrinkFactorX / 2,
-            right: r1.right - shrinkFactorX / 2,
-            top: r1.top + shrinkFactorY, // Mostly shrink top (head) area for jumping precision
-            bottom: r1.bottom,
-            width: r1.width - shrinkFactorX,
-            height: r1.height - shrinkFactorY
+        const bodyBox = {
+            left: r1.left + shrinkX / 2,
+            right: r1.right - shrinkX / 2,
+            top: r1.top + shrinkY, 
+            bottom: r1.bottom, // Feet are bottom
+            width: r1.width - shrinkX,
+            height: r1.height - shrinkY,
+            centerX: r1.left + r1.width / 2,
+            centerY: r1.top + r1.height / 2
         };
 
-        const overlap = !(r1.right < r2.left || 
-                         r1.left > r2.right || 
-                         r1.bottom < r2.top || 
-                         r1.top > r2.bottom);
+        // Check overlap with Body Box
+        const overlap = !(bodyBox.right < r2.left || 
+                         bodyBox.left > r2.right || 
+                         bodyBox.bottom < r2.top || 
+                         bodyBox.top > r2.bottom);
         
         if (!overlap) return null;
 
-        const overlapX = Math.min(r1.right, r2.right) - Math.max(r1.left, r2.left);
-        const overlapY = Math.min(r1.bottom, r2.bottom) - Math.max(r1.top, r2.top);
+        // Determine precise side based on centers and penetration
+        const dx = bodyBox.centerX - (r2.left + r2.width / 2);
+        const dy = bodyBox.centerY - (r2.top + r2.height / 2);
         
+        // Combined half-widths/heights
+        const combinedHalfWidth = (bodyBox.width + r2.width) / 2;
+        const combinedHalfHeight = (bodyBox.height + r2.height) / 2;
+
+        // Calculate penetration depth
+        const overlapX = combinedHalfWidth - Math.abs(dx);
+        const overlapY = combinedHalfHeight - Math.abs(dy);
+
         if (overlapX > overlapY) {
-            // Vertical violation
-            // Since we shrunk the top, we need to be careful.
-            // If character center is above element center
-            if ((r1.top + r1.height/2) < (r2.top + r2.height/2)) return 'top';
-            return 'bottom'; 
+            // Collision is vertical
+            if (dy > 0) return 'top'; // Character is below element (Hitting head?) -> Wait, if dy > 0, char center > el center. Char is BELOW. So char top hits el bottom.
+            // Actually:
+            // if (bodyBox.centerY > r2.centerY) -> Char is lower (y is higher). So Head hits Bottom.
+            // Let's stick to standard return values:
+            // 'bottom': Character is hitting the bottom of the element (Head bonk)
+            // 'top': Character is landing on top of the element (Feet land)
+            
+            if (dy > 0) return 'bottom'; // Char is below, so hitting from bottom
+            return 'top'; // Char is above, so landing on top
         } else {
-            return 'side'; 
+            // Collision is horizontal
+            return 'side';
         }
     }
 
     function checkInteractions() {
         if (!gameStarted) return;
 
-        // --- Mystery Block Logic ---
+        // --- Mystery Block Logic (HEAD BONK) ---
         if (mysteryBlock) {
             const col = checkCollision(character, mysteryBlock);
             if (col) {
-                // If hitting from bottom and not empty
+                // 'bottom' means Character is BELOW element (so Head hits Bottom)
+                // velocityY > 0 means moving UP
                 if (col === 'bottom' && velocityY > 0 && !mysteryBlock.classList.contains('empty')) {
                      mysteryBlock.classList.add('empty');
                      mysteryBlock.classList.add('bounce');
@@ -341,39 +402,31 @@ document.addEventListener('DOMContentLoaded', () => {
                      // Reveal Star
                      if (star) {
                          star.classList.remove('hidden');
-                         star.classList.add('popped'); // CSS animation handles the pop-up
+                         star.classList.add('popped');
                      }
                      
-                     // Stop upward momentum "bonk"
-                     velocityY = 0; 
+                     // Bonk physics: Stop upward movement and bounce back down slightly
+                     velocityY = -2; 
                 } 
             }
         }
 
-        // --- Star Collection ---
+        // --- Star Collection (BODY) ---
         if (star && star.classList.contains('popped') && !star.classList.contains('collected')) {
             if (checkCollision(character, star)) {
                 star.classList.add('collected');
                 console.log("Star Collected! Growing!");
-                
-                // Grow Character
                 character.classList.add('giant');
-                
-                // Sound effect or visual flair could trigger here
-                setTimeout(() => {
-                    // Optional: revert after 10 seconds? Or stay big. 
-                    // Mario usually stays big until hit. We have no enemies, so stay big.
-                }, 10000);
+                // Optional sound here
             }
         }
 
-        // --- Portal Portal ---
+        // --- Portal (BODY) ---
         if (portal && checkCollision(character, portal)) {
             if (!character.dataset.teleporting) {
                 character.dataset.teleporting = "true";
                 portal.style.transform = "scale(1.2)";
                 
-                // Visual feedback before redirect
                 character.style.transition = "transform 0.5s, opacity 0.5s";
                 character.style.transform += " scale(0) rotate(360deg)";
                 character.style.opacity = "0";
@@ -384,32 +437,67 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // --- Pipe Interaction ---
+        // --- Pipe Entry (FEET) ---
+        // Requirement: Standing on top (handled by Physics loop mostly) + Pressing Down.
         if (pipe) {
+            // We can also check collision 'top' (Char is ABOVE pipe)
             const col = checkCollision(character, pipe);
-            // Must be 'standing' on it or roughly intersecting
-            if (col && Math.abs((character.getBoundingClientRect().left + character.getBoundingClientRect().width/2) - (pipe.getBoundingClientRect().left + pipe.getBoundingClientRect().width/2)) < 30) {
-                 if (keys.ArrowDown && !character.dataset.piping) {
-                    character.dataset.piping = "true";
-                    console.log("Entering Pipe!");
-                    
-                    // Visual Effect: Go BEHIND pipe
-                    character.style.zIndex = 3; // Pipe is 4
-                    character.style.transition = "bottom 1s ease";
-                    character.style.bottom = "-20%"; 
-                    
-                    setTimeout(() => {
-                        const mapSection = document.getElementById('explore');
-                        mapSection.scrollIntoView({ behavior: 'smooth' });
+            
+            // Check center alignment specifically for entry
+            if (col === 'top' || (Math.abs((character.getBoundingClientRect().left + character.getBoundingClientRect().width/2) - (pipe.getBoundingClientRect().left + pipe.getBoundingClientRect().width/2)) < 30)) {
+                if (keys.ArrowDown && !character.dataset.piping) {
+                    // Must be effective grounded
+                    if (Math.abs(velocityY) < 1) { 
+                        character.dataset.piping = "true";
+                        console.log("Entering Pipe...");
+                        
+                        // 1. Center Character on Pipe (Visual Snap)
+                        const pipeCenter = pipe.offsetLeft + pipe.offsetWidth / 2;
+                        const screenW = heroSection.offsetWidth;
+                        const centerPct = (pipeCenter / screenW) * 100;
+                        
+                        // Smoothly snap x
+                        charX = centerPct; 
+                        character.style.left = `${charX}%`;
+                        
+                        // 2. Animation: "Sucked In"
+                        // Go behind pipe immediately?
+                        character.style.zIndex = 3; // Pipe is 10
+                        
+                        // Slide down and Squish slightly
+                        character.style.transition = "bottom 1.5s ease-in, transform 1.5s ease-in";
+                        character.style.bottom = "-20%"; 
+                        // Add squish effect to transform
+                        character.style.transform += " scaleX(0.8) scaleY(1.2)"; 
+                        
+                        const transitionOverlay = document.getElementById('pipe-transition');
                         
                         setTimeout(() => {
-                            character.style.transition = ""; 
-                            charY = groundLevel; 
-                            character.style.bottom = `${charY}%`;
-                            character.style.zIndex = ""; // Restore z-index
-                            delete character.dataset.piping;
-                        }, 1000);
-                    }, 800);
+                            // 3. Trigger Screen Wipe
+                            if (transitionOverlay) transitionOverlay.classList.add('active');
+                            
+                            setTimeout(() => {
+                                // 4. Scroll
+                                const mapSection = document.getElementById('explore');
+                                mapSection.scrollIntoView({ behavior: 'auto' }); 
+                                
+                                // 5. Reset Character
+                                character.style.transition = ""; 
+                                charY = groundLevel; 
+                                character.style.bottom = `${charY}%`;
+                                character.style.zIndex = ""; 
+                                delete character.dataset.piping;
+                                // Reset Transform (remove squish)
+                                character.style.transform = character.style.transform.replace(" scaleX(0.8) scaleY(1.2)", "");
+
+                                setTimeout(() => {
+                                    transitionOverlay.classList.remove('active');
+                                }, 500);
+
+                            }, 800); 
+                        }, 1000); // Wait longer for the full "slide down" effect
+                    }
+                    }
                 }
             }
         }
