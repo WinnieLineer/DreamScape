@@ -7,6 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="src/assets/images/favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/css/styles.css">
+    <link rel="stylesheet" href="src/css/game-elements.css">
 </head>
 <body>
     <!-- 導航欄 -->
@@ -37,36 +38,9 @@
             <h1 class="title">DREAMSCAPE EXPLORER</h1>
             <p class="subtitle">PRESS START TO ADVENTURE</p>
         </div>
-        <div id="character" class="character"></div>
         
-        <!-- Keyboard Guide -->
-        <div class="keyboard-guide">
-            <div class="key-row">
-                <div class="key" id="key-up">▲</div>
-            </div>
-            <div class="key-row">
-                <div class="key" id="key-left">◀</div>
-                <div class="key" id="key-down">▼</div>
-                <div class="key" id="key-right">▶</div>
-            </div>
-            <p>USE ARROW KEYS</p>
-        </div>
-    </section>
-
-    <!-- 探索地圖區塊 -->
-    <section id="explore" class="explore-section">
-        <h2>EXPLORE MAP</h2>
-        <div class="map-grid">
-            <div class="map-node active">HOME</div>
-            <div class="map-node">FOREST</div>
-            <div class="map-node">CITY</div>
-            <div class="map-node lock">???</div>
-        </div>
-    </section>
-
-    <!-- 聯繫我們區塊 -->
-    <section id="contact" class="contact-section">
-        <h2>CONTACT US</h2>
+        <!-- Game Elements -->
+        <div id="star" class="pixel-star element" style="left: 70%; bottom: 40%;"></div>
         <div class="contact-box">
             <p>SEND A MESSAGE</p>
             <form id="contact-form" class="pixel-form">

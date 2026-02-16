@@ -196,6 +196,11 @@ document.addEventListener('DOMContentLoaded', () => {
         character.style.left = `${charX}%`;
         character.style.bottom = `${charY}%`;
 
+        // Check Collisions
+        if (typeof checkInteractions === 'function') {
+            checkInteractions();
+        }
+
         requestAnimationFrame(gameLoop);
     }
 
@@ -217,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const diffX = touchX - touchStartX;
         const diffY = touchY - touchStartY;
 
-        if (Math.abs(diffX) > 20) {
+        if (Math.abs(diffX) > 30) { // Increased threshold slightly
             if (diffX > 0) keys.ArrowRight = true;
             else keys.ArrowLeft = true;
         } else {
@@ -225,16 +230,27 @@ document.addEventListener('DOMContentLoaded', () => {
             keys.ArrowLeft = false;
         }
 
+        // Swipe Up (Jump)
         if (diffY < -50 && !isJumping) { 
              keys.ArrowUp = true;
-             setTimeout(() => keys.ArrowUp = false, 200);
+             // Auto-release jump key after short delay to prevent infinite jump logic if held
+             setTimeout(() => keys.ArrowUp = false, 300);
+        }
+
+        // Swipe Down (Crouch / Enter Pipe)
+        if (diffY > 50) {
+            keys.ArrowDown = true;
+            // Keep it pressed for a bit to ensure pipe logic catches it
+            setTimeout(() => keys.ArrowDown = false, 500);
         }
     }, {passive: false});
 
     heroSection.addEventListener('touchend', (e) => {
+        // Reset all keys on touch end to be safe
         keys.ArrowLeft = false;
         keys.ArrowRight = false;
-        keys.ArrowUp = false;
+        // keys.ArrowUp = false; // Handled by timeout
+        // keys.ArrowDown = false; // Handled by timeout
     });
 
     // --- Map Switching Logic ---
@@ -263,26 +279,88 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Contact Form Logic ---
-    const contactForm = document.getElementById('contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const btn = contactForm.querySelector('button');
-            const originalText = btn.textContent;
-            
-            btn.textContent = 'SENDING...';
-            btn.disabled = true;
+    // --- Game Elements Logic ---
+    const star = document.getElementById('star');
+    const pipe = document.getElementById('pipe');
+    const portal = document.getElementById('portal');
 
-            // Simulate network request
-            setTimeout(() => {
-                alert('MESSAGE SENT! THANK YOU, HERO.');
-                contactForm.reset();
-                btn.textContent = originalText;
-                btn.disabled = false;
-            }, 1000);
-        });
+    // Simple AABB Collision Detection
+    function checkCollision(el1, el2) {
+        const rect1 = el1.getBoundingClientRect();
+        const rect2 = el2.getBoundingClientRect();
+        
+        return !(rect1.right < rect2.left || 
+                 rect1.left > rect2.right || 
+                 rect1.bottom < rect2.top || 
+                 rect1.top > rect2.bottom);
     }
 
-    gameLoop();
-});
+    // Game Loop additions
+    function checkInteractions() {
+        if (!gameStarted) return;
+
+        // Star Collection
+        if (star && !star.classList.contains('collected') && checkCollision(character, star)) {
+            star.classList.add('collected');
+            // Visual feedback (could add sound later)
+            console.log("Star Collected!");
+        }
+
+        // Portal Teleportation
+        if (portal && checkCollision(character, portal)) {
+            // Simple random teleport
+            // Debounce slightly to avoid rapid toggling
+            if (!character.dataset.teleporting) {
+                character.dataset.teleporting = "true";
+                // Teleport to random spot between 20% and 80%
+                charX = 20 + Math.random() * 60; 
+                character.style.opacity = 0; // Blink effect
+                
+                setTimeout(() => {
+                    character.style.opacity = 1;
+                    delete character.dataset.teleporting;
+                }, 500);
+            }
+        }
+
+        // Pipe Interaction
+        if (pipe && checkCollision(character, pipe)) {
+            // Check if pressing DOWN (enter pipe)
+            // Need to verify if char is somewhat centered on pipe
+            const pipeRect = pipe.getBoundingClientRect();
+            const charRect = character.getBoundingClientRect();
+            const centerDiff = Math.abs((charRect.left + charRect.width/2) - (pipeRect.left + pipeRect.width/2));
+            
+            if (keys.ArrowDown && centerDiff < 50 && !character.dataset.piping) {
+                character.dataset.piping = "true";
+                console.log("Entering Pipe!");
+                
+                // Animation: Move down visually through transparency
+                character.style.transition = "bottom 1s ease";
+                character.style.bottom = "-20%"; // Go below screen
+                
+                setTimeout(() => {
+                    // Action: Scroll to Map
+                    const mapSection = document.getElementById('explore');
+                    mapSection.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Reset character after play
+                    setTimeout(() => {
+                        character.style.transition = ""; // Reset
+                        charY = groundLevel; // Reset pos
+                        character.style.bottom = `${charY}%`;
+                        delete character.dataset.piping;
+                    }, 1000);
+                }, 800);
+            }
+        }
+    }
+
+    // Modify gameLoop to include interactions
+    const originalGameLoop = gameLoop; // Careful with recursion or redefinition, better to inject
+    // Actually, let's just insert the call before requestAnimationFrame in the existing loop function? 
+    // Since I'm replacing the file content, I'll rewrite the loop end.
+    
+    // ... inside gameLoop ...
+    // checkInteractions();
+    // requestAnimationFrame(gameLoop);

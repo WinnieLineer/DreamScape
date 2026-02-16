@@ -174,10 +174,16 @@ body {
 }
 
 .hero-content {
-    z-index: 10;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
+    color: #fff;
     text-shadow: 4px 4px 0 #000;
-    pointer-events: none; /* Let clicks pass to start screen if needed */
+    z-index: 2;
+    width: 90%; /* Prevent text handling touching edges */
+    pointer-events: none; /* Let clicks pass through to map/game */
 }
 
 .hero-content .title {
