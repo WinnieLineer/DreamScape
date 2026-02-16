@@ -68,8 +68,22 @@
     <section id="contact" class="contact-section">
         <h2>CONTACT US</h2>
         <div class="contact-box">
-            <p>Ready to join the party?</p>
-            <a href="mailto:contact@winnie-lin.space" class="btn pixel-btn">SEND MAIL</a>
+            <p>SEND A MESSAGE</p>
+            <form id="contact-form" class="pixel-form">
+                <div class="form-group">
+                    <label for="name">NAME:</label>
+                    <input type="text" id="name" required placeholder="PLAYER 1">
+                </div>
+                <div class="form-group">
+                    <label for="email">EMAIL:</label>
+                    <input type="email" id="email" required placeholder="EMAIL@EXAMPLE.COM">
+                </div>
+                <div class="form-group">
+                    <label for="message">MESSAGE:</label>
+                    <textarea id="message" rows="4" required placeholder="YOUR MESSAGE..."></textarea>
+                </div>
+                <button type="submit" class="btn pixel-btn">SEND</button>
+            </form>
         </div>
     </section>
 

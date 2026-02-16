@@ -323,11 +323,54 @@ body {
     padding: 2rem;
     display: inline-block;
     background: #000;
+    width: 100%;
+    max-width: 600px;
 }
 
 .contact-box p {
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.pixel-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: left;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 1rem;
+    color: var(--secondary-color);
+}
+
+.form-group input, 
+.form-group textarea {
+    background: #222;
+    border: 4px solid #fff;
+    padding: 10px;
+    color: #fff;
+    font-family: var(--font-main);
+    font-size: 1rem;
+    outline: none;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #666;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--accent-color);
+    background: #111;
 }
 
 /* UI Controls (Mobile/Touch) */

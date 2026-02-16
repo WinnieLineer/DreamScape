@@ -263,5 +263,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- Contact Form Logic ---
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = contactForm.querySelector('button');
+            const originalText = btn.textContent;
+            
+            btn.textContent = 'SENDING...';
+            btn.disabled = true;
+
+            // Simulate network request
+            setTimeout(() => {
+                alert('MESSAGE SENT! THANK YOU, HERO.');
+                contactForm.reset();
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }, 1000);
+        });
+    }
+
     gameLoop();
 });
