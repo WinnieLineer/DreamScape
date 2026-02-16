@@ -215,7 +215,14 @@ body {
     background-size: contain;
     z-index: 5;
     image-rendering: pixelated;
-    transition: bottom 0.2s ease-out;
+    transition: bottom 0.2s ease-out, transform 0.3s ease; /* Added transform transition */
+}
+
+/* Giant Mode */
+.character.giant {
+    width: 512px; /* 256 * 2 */
+    height: 512px; /* 256 * 2 */
+    filter: drop-shadow(0 0 10px #ffd700);
 }
 
 /* Keyboard Guide */

@@ -40,7 +40,44 @@
         </div>
         
         <!-- Game Elements -->
-        <div id="star" class="pixel-star element" style="left: 70%; bottom: 40%;"></div>
+        <div id="mystery-block" class="mystery-block element" style="left: 60%; bottom: 35%;">
+            <div class="question-mark">?</div>
+        </div>
+        <div id="star" class="pixel-star element hidden" style="left: 60%; bottom: 35%;"></div>
+        
+        <div id="pipe" class="pixel-pipe element" style="left: 85%; bottom: 20%;"></div>
+        <div id="portal" class="pixel-portal element" style="left: 10%; bottom: 20%;"></div>
+
+        <div id="character" class="character"></div>
+        
+        <!-- Keyboard Guide -->
+        <div class="keyboard-guide">
+            <div class="key-row">
+                <div class="key" id="key-up">▲</div>
+            </div>
+            <div class="key-row">
+                <div class="key" id="key-left">◀</div>
+                <div class="key" id="key-down">▼</div>
+                <div class="key" id="key-right">▶</div>
+            </div>
+            <p>USE ARROW KEYS</p>
+        </div>
+    </section>
+
+    <!-- 探索地圖區塊 -->
+    <section id="explore" class="explore-section">
+        <h2>EXPLORE MAP</h2>
+        <div class="map-grid">
+            <div class="map-node active">HOME</div>
+            <div class="map-node">FOREST</div>
+            <div class="map-node">CITY</div>
+            <div class="map-node lock">???</div>
+        </div>
+    </section>
+
+    <!-- 聯繫我們區塊 -->
+    <section id="contact" class="contact-section">
+        <h2>CONTACT US</h2>
         <div class="contact-box">
             <p>SEND A MESSAGE</p>
             <form id="contact-form" class="pixel-form">

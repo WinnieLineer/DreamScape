@@ -280,78 +280,137 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Game Elements Logic ---
+    const mysteryBlock = document.getElementById('mystery-block');
     const star = document.getElementById('star');
     const pipe = document.getElementById('pipe');
     const portal = document.getElementById('portal');
 
-    // Simple AABB Collision Detection
-    function checkCollision(el1, el2) {
-        const rect1 = el1.getBoundingClientRect();
-        const rect2 = el2.getBoundingClientRect();
+    // Enhanced Collision Detection
+    // Returns collision data or null
+    function checkCollision(char, el) {
+        let r1 = char.getBoundingClientRect();
+        const r2 = el.getBoundingClientRect();
         
-        return !(rect1.right < rect2.left || 
-                 rect1.left > rect2.right || 
-                 rect1.bottom < rect2.top || 
-                 rect1.top > rect2.bottom);
+        // Shrink character hitbox to avoid whitespace issues (visual boundary)
+        const shrinkFactorX = r1.width * 0.3; // 30% shrinking horizontally
+        const shrinkFactorY = r1.height * 0.2; // 20% shrinking vertically
+        
+        r1 = {
+            left: r1.left + shrinkFactorX / 2,
+            right: r1.right - shrinkFactorX / 2,
+            top: r1.top + shrinkFactorY, // Mostly shrink top (head) area for jumping precision
+            bottom: r1.bottom,
+            width: r1.width - shrinkFactorX,
+            height: r1.height - shrinkFactorY
+        };
+
+        const overlap = !(r1.right < r2.left || 
+                         r1.left > r2.right || 
+                         r1.bottom < r2.top || 
+                         r1.top > r2.bottom);
+        
+        if (!overlap) return null;
+
+        const overlapX = Math.min(r1.right, r2.right) - Math.max(r1.left, r2.left);
+        const overlapY = Math.min(r1.bottom, r2.bottom) - Math.max(r1.top, r2.top);
+        
+        if (overlapX > overlapY) {
+            // Vertical violation
+            // Since we shrunk the top, we need to be careful.
+            // If character center is above element center
+            if ((r1.top + r1.height/2) < (r2.top + r2.height/2)) return 'top';
+            return 'bottom'; 
+        } else {
+            return 'side'; 
+        }
     }
 
-    // Game Loop additions
     function checkInteractions() {
         if (!gameStarted) return;
 
-        // Star Collection
-        if (star && !star.classList.contains('collected') && checkCollision(character, star)) {
-            star.classList.add('collected');
-            // Visual feedback (could add sound later)
-            console.log("Star Collected!");
-        }
+        // --- Mystery Block Logic ---
+        if (mysteryBlock) {
+            const col = checkCollision(character, mysteryBlock);
+            if (col) {
+                // If hitting from bottom and not empty
+                if (col === 'bottom' && velocityY > 0 && !mysteryBlock.classList.contains('empty')) {
+                     mysteryBlock.classList.add('empty');
+                     mysteryBlock.classList.add('bounce');
+                     setTimeout(() => mysteryBlock.classList.remove('bounce'), 200);
 
-        // Portal Teleportation
-        if (portal && checkCollision(character, portal)) {
-            // Simple random teleport
-            // Debounce slightly to avoid rapid toggling
-            if (!character.dataset.teleporting) {
-                character.dataset.teleporting = "true";
-                // Teleport to random spot between 20% and 80%
-                charX = 20 + Math.random() * 60; 
-                character.style.opacity = 0; // Blink effect
-                
-                setTimeout(() => {
-                    character.style.opacity = 1;
-                    delete character.dataset.teleporting;
-                }, 500);
+                     // Reveal Star
+                     if (star) {
+                         star.classList.remove('hidden');
+                         star.classList.add('popped'); // CSS animation handles the pop-up
+                     }
+                     
+                     // Stop upward momentum "bonk"
+                     velocityY = 0; 
+                } 
             }
         }
 
-        // Pipe Interaction
-        if (pipe && checkCollision(character, pipe)) {
-            // Check if pressing DOWN (enter pipe)
-            // Need to verify if char is somewhat centered on pipe
-            const pipeRect = pipe.getBoundingClientRect();
-            const charRect = character.getBoundingClientRect();
-            const centerDiff = Math.abs((charRect.left + charRect.width/2) - (pipeRect.left + pipeRect.width/2));
-            
-            if (keys.ArrowDown && centerDiff < 50 && !character.dataset.piping) {
-                character.dataset.piping = "true";
-                console.log("Entering Pipe!");
+        // --- Star Collection ---
+        if (star && star.classList.contains('popped') && !star.classList.contains('collected')) {
+            if (checkCollision(character, star)) {
+                star.classList.add('collected');
+                console.log("Star Collected! Growing!");
                 
-                // Animation: Move down visually through transparency
-                character.style.transition = "bottom 1s ease";
-                character.style.bottom = "-20%"; // Go below screen
+                // Grow Character
+                character.classList.add('giant');
                 
+                // Sound effect or visual flair could trigger here
                 setTimeout(() => {
-                    // Action: Scroll to Map
-                    const mapSection = document.getElementById('explore');
-                    mapSection.scrollIntoView({ behavior: 'smooth' });
+                    // Optional: revert after 10 seconds? Or stay big. 
+                    // Mario usually stays big until hit. We have no enemies, so stay big.
+                }, 10000);
+            }
+        }
+
+        // --- Portal Portal ---
+        if (portal && checkCollision(character, portal)) {
+            if (!character.dataset.teleporting) {
+                character.dataset.teleporting = "true";
+                portal.style.transform = "scale(1.2)";
+                
+                // Visual feedback before redirect
+                character.style.transition = "transform 0.5s, opacity 0.5s";
+                character.style.transform += " scale(0) rotate(360deg)";
+                character.style.opacity = "0";
+
+                setTimeout(() => {
+                     window.location.href = "about.html";
+                }, 800); 
+            }
+        }
+
+        // --- Pipe Interaction ---
+        if (pipe) {
+            const col = checkCollision(character, pipe);
+            // Must be 'standing' on it or roughly intersecting
+            if (col && Math.abs((character.getBoundingClientRect().left + character.getBoundingClientRect().width/2) - (pipe.getBoundingClientRect().left + pipe.getBoundingClientRect().width/2)) < 30) {
+                 if (keys.ArrowDown && !character.dataset.piping) {
+                    character.dataset.piping = "true";
+                    console.log("Entering Pipe!");
                     
-                    // Reset character after play
+                    // Visual Effect: Go BEHIND pipe
+                    character.style.zIndex = 3; // Pipe is 4
+                    character.style.transition = "bottom 1s ease";
+                    character.style.bottom = "-20%"; 
+                    
                     setTimeout(() => {
-                        character.style.transition = ""; // Reset
-                        charY = groundLevel; // Reset pos
-                        character.style.bottom = `${charY}%`;
-                        delete character.dataset.piping;
-                    }, 1000);
-                }, 800);
+                        const mapSection = document.getElementById('explore');
+                        mapSection.scrollIntoView({ behavior: 'smooth' });
+                        
+                        setTimeout(() => {
+                            character.style.transition = ""; 
+                            charY = groundLevel; 
+                            character.style.bottom = `${charY}%`;
+                            character.style.zIndex = ""; // Restore z-index
+                            delete character.dataset.piping;
+                        }, 1000);
+                    }, 800);
+                }
             }
         }
     }
