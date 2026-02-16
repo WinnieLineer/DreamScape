@@ -36,7 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         document.querySelectorAll('.navbar ul li a').forEach(link => {
-            link.addEventListener('click', () => {
+            link.addEventListener('click', (e) => {
+                // If it's the specific HOME link
+                if (link.getAttribute('href') === '#hero') {
+                    e.preventDefault();
+                    document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
+                }
+
                 if (window.innerWidth <= 768) {
                     navList.classList.remove('active');
                 }
@@ -69,9 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const gravity = 1.2; // Slightly stronger gravity for snappier feel
     const groundLevel = 20; // Matches CSS bottom: 20%
-    // const targetJumpHeight = 35; 
     // Tuned manually: 22 was too high. Resetting to 18 for approx 1.5x char height (visually)
-    const jumpForce = 18; 
+    // User requested even lower to stay on screen. Reducing to 15.
+    const jumpForce = 15; 
     const speed = 1.0; 
 
     // State
@@ -252,7 +258,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 heroSection.classList.add('bg-city');
             }
             
-            // Optional: Play a sound effect here in the future
+            // Scroll back to Hero Section
+            heroSection.scrollIntoView({ behavior: 'smooth' });
         });
     });
 
