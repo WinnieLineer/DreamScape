@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DreamScape Explorer</title>
     <link rel="icon" type="image/svg+xml" href="src/assets/images/favicon.svg">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Noto+Sans+TC:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/css/styles.css">
 </head>
 <body>
@@ -14,23 +14,82 @@
         <div class="logo">DreamScape</div>
         <button class="menu-toggle">☰</button>
         <ul>
-            <li><a href="index.html">首頁</a></li>
+            <li><a href="#hero">首頁</a></li>
             <li><a href="about.html">關於作者</a></li>
-            <li><a href="#">探索地圖</a></li>
-            <li><a href="#">聯繫我們</a></li>
+            <li><a href="#explore">探索地圖</a></li>
+            <li><a href="#contact">聯繫我們</a></li>
         </ul>
     </nav>
 
+    <!-- Start Screen Overlay -->
+    <div id="start-screen" class="start-screen">
+        <div class="start-content">
+            <h1>DREAMSCAPE</h1>
+            <p>CLICK TO START</p>
+            <div class="blinking-cursor">_</div>
+        </div>
+    </div>
+
     <!-- 首頁主視覺 -->
-    <section class="hero-section">
+    <section id="hero" class="hero-section">
         <div class="mist"></div>
         <div class="hero-content">
             <h1 class="title">DREAMSCAPE EXPLORER</h1>
+            <p class="subtitle">PRESS START TO ADVENTURE</p>
         </div>
-        <div class="character"></div>
+        <div id="character" class="character"></div>
+        
+        <!-- Keyboard Guide -->
+        <div class="keyboard-guide">
+            <div class="key-row">
+                <div class="key" id="key-up">▲</div>
+            </div>
+            <div class="key-row">
+                <div class="key" id="key-left">◀</div>
+                <div class="key" id="key-down">▼</div>
+                <div class="key" id="key-right">▶</div>
+            </div>
+            <p>USE ARROW KEYS</p>
+        </div>
     </section>
-    <button id="music-control">播放背景音樂</button>
-    <audio id="bgMusic" muted autoplay loop>
+
+    <!-- 探索地圖區塊 -->
+    <section id="explore" class="explore-section">
+        <h2>EXPLORE MAP</h2>
+        <div class="map-grid">
+            <div class="map-node active">HOME</div>
+            <div class="map-node">FOREST</div>
+            <div class="map-node">CITY</div>
+            <div class="map-node lock">???</div>
+        </div>
+    </section>
+
+    <!-- 聯繫我們區塊 -->
+    <section id="contact" class="contact-section">
+        <h2>CONTACT US</h2>
+        <div class="contact-box">
+            <p>Ready to join the party?</p>
+            <a href="mailto:contact@winnie-lin.space" class="btn pixel-btn">SEND MAIL</a>
+        </div>
+    </section>
+
+    <div class="ui-controls">
+        <div class="d-pad">
+            <button class="up">▲</button>
+            <div class="horizontal">
+                <button class="left">◀</button>
+                <button class="right">▶</button>
+            </div>
+            <button class="down">▼</button>
+        </div>
+        <div class="action-buttons">
+            <button class="btn-a">A</button>
+            <button class="btn-b">B</button>
+        </div>
+    </div>
+
+    <button id="music-control" class="pixel-btn music-btn">MUSIC: OFF</button>
+    <audio id="bgMusic" loop>
         <source src="src/assets/audio/ambient-music.mp3" type="audio/mp3">
         您的瀏覽器不支持音頻播放。
     </audio>

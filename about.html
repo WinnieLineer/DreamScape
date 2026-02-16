@@ -3,70 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="了解 DreamScape Explorer 的創作者 Winnie Lin 的專業背景和技能">
-    <title>關於作者 - DreamScape Explorer</title>
+    <title>About - DreamScape</title>
     <link rel="icon" type="image/svg+xml" href="src/assets/images/favicon.svg">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Noto+Sans+TC:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/css/styles.css">
 </head>
 <body>
-    <!-- 導航欄 -->
-    <nav class="navbar" role="navigation" aria-label="主要導航">
+    <nav class="navbar">
         <div class="logo">DreamScape</div>
-        <button class="menu-toggle" aria-label="切換導航選單">☰</button>
+        <button class="menu-toggle">☰</button>
         <ul>
-            <li><a href="index.html">首頁</a></li>
-            <li><a href="about.html" aria-current="page">關於作者</a></li>
-            <li><a href="#">探索地圖</a></li>
-            <li><a href="#">聯繫我們</a></li>
+            <li><a href="index.html">HOME</a></li>
+            <li><a href="about.html">ABOUT</a></li>
+            <li><a href="index.html#explore">MAP</a></li>
+            <li><a href="index.html#contact">CONTACT</a></li>
         </ul>
     </nav>
 
-    <!-- 關於作者內容 -->
-    <main class="about-section" role="main">
-        <div class="about-container">
-            <h1 class="about-title">關於作者</h1>
-            <div class="about-content">
-                <p>我是 Winnie Lin，一位充滿熱情的軟體工程師，專注於創造優雅且高效的解決方案。我擁有豐富的技術背景和創新的思維方式，致力於將複雜的技術轉化為用戶友好的體驗。</p>
-                
-                <p>在過去的職業生涯中，我參與了多個重要專案，包括：</p>
-                <ul>
-                    <li>開發和維護大型企業系統</li>
-                    <li>設計和實現創新的用戶界面</li>
-                    <li>優化系統性能和用戶體驗</li>
-                </ul>
+    <main class="about-section">
+        <!-- Reusing hero background but simpler container -->
+        <div class="about-container pixel-box">
+            <h1 class="about-title">PLAYER PROFILE</h1>
+            
+            <div class="profile-card">
+                <div class="avatar-box">
+                    <!-- Placeholder/CSS Avatar since we don't have a real one -->
+                    <div class="pixel-avatar">WL</div>
+                </div>
+                <div class="stats-box">
+                    <h2>WINNIE LIN</h2>
+                    <p class="role">CLASS: SOFTWARE ENGINEER</p>
+                    <p class="bio">Passionate coder dedicated to crafting elegant solutions and pixel-perfect experiences.</p>
+                </div>
             </div>
 
-            <section class="skills-section" aria-labelledby="skills-title">
-                <h2 id="skills-title" class="skills-title">專業技能</h2>
+            <section class="skills-section">
+                <h2 class="skills-title">SKILL TREE</h2>
                 <div class="skills-grid">
                     <article class="skill-card">
-                        <h3>前端開發</h3>
-                        <p>HTML5, CSS3, JavaScript, Vue.js</p>
+                        <h3>FRONTEND</h3>
+                        <div class="xp-bar"><div class="fill" style="width: 90%"></div></div>
+                        <p>HTML5, CSS3, JS, Vue</p>
                     </article>
                     <article class="skill-card">
-                        <h3>後端開發</h3>
-                        <p>Java, Python, Node.js</p>
+                        <h3>BACKEND</h3>
+                        <div class="xp-bar"><div class="fill" style="width: 85%"></div></div>
+                        <p>Java, Python, Node</p>
                     </article>
                     <article class="skill-card">
-                        <h3>資料庫</h3>
-                        <p>Oracle SQL, MySQL, PostgreSQL</p>
-                    </article>
-                    <article class="skill-card">
-                        <h3>DevOps</h3>
-                        <p>Docker, Kubernetes, CI/CD</p>
+                        <h3>DATABASE</h3>
+                        <div class="xp-bar"><div class="fill" style="width: 80%"></div></div>
+                        <p>SQL, Postgres</p>
                     </article>
                 </div>
             </section>
 
-            <nav class="social-links" aria-label="社交媒體連結">
-                <a href="https://www.linkedin.com/in/winnielin2949/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                <a href="https://github.com/WinnieLineer" target="_blank" rel="noopener noreferrer">GitHub</a>
-                <a href="http://winnielineer.github.io/me" target="_blank" rel="noopener noreferrer">個人網站</a>
-            </nav>
+            <div class="social-links">
+                <a href="https://www.linkedin.com/in/winnielin2949/" target="_blank" class="pixel-btn">LINKEDIN</a>
+                <a href="https://github.com/WinnieLineer" target="_blank" class="pixel-btn">GITHUB</a>
+                <a href="http://winnielineer.github.io/me" target="_blank" class="pixel-btn">WEBSITE</a>
+            </div>
         </div>
     </main>
 
+    <style>
+        /* Embedded specific styles for About Page tweaks */
+        .pixel-box {
+            border: 4px solid #fff;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.85);
+            max-width: 900px;
+            margin: 100px auto;
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.5);
+        }
+
+        .profile-card {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .pixel-avatar {
+            width: 100px;
+            height: 100px;
+            background: var(--primary-color);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            border: 4px solid #fff;
+        }
+
+        .stats-box {
+            flex: 1;
+            text-align: left;
+            min-width: 250px;
+        }
+
+        .stats-box h2 {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .role {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .xp-bar {
+            height: 20px;
+            background: #333;
+            border: 2px solid #fff;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .xp-bar .fill {
+            height: 100%;
+            background: var(--secondary-color);
+        }
+
+        @media (max-width: 768px) {
+            .pixel-box {
+                margin: 80px 20px;
+                padding: 20px;
+            }
+            .stats-box {
+                text-align: center;
+            }
+        }
+    </style>
     <script src="src/js/main.js"></script>
 </body>
-</html> 
+</html>
