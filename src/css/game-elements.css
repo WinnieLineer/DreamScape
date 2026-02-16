@@ -130,18 +130,19 @@
 
 /* --- Pixel Portal (Blue-Green Retro Style) --- */
 .pixel-portal {
-    width: 60px;
-    height: 90px;
+    width: 120px; /* Doubled from 60px */
+    height: 180px; /* Doubled from 90px */
     background: #000;
     /* Pixel Art Frame using box-shadow */
     box-shadow: 
-        inset 4px 4px 0 #00ffff, /* Cyan */
-        inset -4px -4px 0 #008080, /* Teal */
-        4px 4px 0 #000,
-        0 0 10px #00ffff;
+        inset 8px 8px 0 #00ffff, /* Scaled up border */
+        inset -8px -8px 0 #008080, 
+        8px 8px 0 #000,
+        0 0 20px #00ffff;
     animation: portal-pulse 1.5s infinite alternate;
     position: absolute;
     overflow: hidden;
+    z-index: 4; /* Ensure visibility */
 }
 
 .pixel-portal::after {
