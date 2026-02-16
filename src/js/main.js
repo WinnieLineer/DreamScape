@@ -356,11 +356,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Modify gameLoop to include interactions
-    const originalGameLoop = gameLoop; // Careful with recursion or redefinition, better to inject
-    // Actually, let's just insert the call before requestAnimationFrame in the existing loop function? 
-    // Since I'm replacing the file content, I'll rewrite the loop end.
-    
-    // ... inside gameLoop ...
-    // checkInteractions();
-    // requestAnimationFrame(gameLoop);
+    // Initial Call
+    gameLoop();
+});
