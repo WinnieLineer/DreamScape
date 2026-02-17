@@ -57,29 +57,51 @@ document.addEventListener('DOMContentLoaded', () => {
     const playButton = document.getElementById('music-control');
     let gameStarted = false;
 
-    // Explicitly set volume
-    audio.volume = 1.0;
+    // Explicitly set volume if audio exists
+    if (audio) {
+        audio.volume = 1.0;
+    }
 
     const startGame = () => {
         if (gameStarted) return;
         gameStarted = true;
+        
+        // Save state
+        sessionStorage.setItem('gameStarted', 'true');
 
         // Hide overlay
-        startScreen.classList.add('hidden');
+        if (startScreen) startScreen.classList.add('hidden');
         
         // Init Audio Context on interaction
         if (audioCtx.state === 'suspended') audioCtx.resume();
 
         // Play Audio
-        audio.play().then(() => {
-            playButton.textContent = 'MUSIC: ON';
-        }).catch(err => {
-            console.log("Audio play failed:", err);
-            playButton.textContent = 'MUSIC: OFF'; // Should not happen with direct interaction
-        });
+        if (audio) {
+            audio.play().then(() => {
+                if (playButton) playButton.textContent = 'MUSIC: ON';
+            }).catch(err => {
+                console.log("Audio play failed:", err);
+                if (playButton) playButton.textContent = 'MUSIC: OFF'; // Should not happen with direct interaction
+            });
+        }
     };
 
-    startScreen.addEventListener('click', startGame);
+    if (startScreen) {
+        startScreen.addEventListener('click', startGame);
+    }
+
+    // Check if game was already started in this session
+    if (sessionStorage.getItem('gameStarted') === 'true') {
+        // Skip start screen, but audio might be blocked without interaction
+        gameStarted = true;
+        if (startScreen) startScreen.classList.add('hidden');
+        // Try to play audio, might fail
+        if (audio) {
+            audio.play().catch(() => {
+                 console.log("Autoplay blocked, waiting for interaction");
+            });
+        }
+    }
 
     // --- Navigation & UI ---
     const menuToggle = document.querySelector('.menu-toggle');
@@ -106,16 +128,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Audio Toggle (Post-Start) ---
-    playButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (audio.paused) {
-            audio.play();
-            playButton.textContent = 'MUSIC: ON';
-        } else {
-            audio.pause();
-            playButton.textContent = 'MUSIC: OFF';
-        }
-    });
+    // --- Audio Toggle (Post-Start) ---
+    if (playButton) {
+        playButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (audio.paused) {
+                audio.play();
+                playButton.textContent = 'MUSIC: ON';
+            } else {
+                audio.pause();
+                playButton.textContent = 'MUSIC: OFF';
+            }
+        });
+    }
 
     // --- Game / Character Logic ---
     const character = document.getElementById('character');
@@ -196,6 +221,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Game Loop
     function gameLoop() {
+        if (!character) return; // Stop if no character (e.g. About page)
+        
         if (!gameStarted) {
             requestAnimationFrame(gameLoop);
             return;
@@ -216,8 +243,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (charX > 100) charX = 100;
 
         // Jump
+        const isMobile = window.innerWidth <= 768;
+        const currentJumpForce = isMobile ? jumpForce * 0.7 : jumpForce; // Reduced for mobile
+
         if (keys.ArrowUp && !isJumping) {
-            velocityY = jumpForce;
+            velocityY = currentJumpForce;
             isJumping = true;
         }
 
@@ -231,33 +261,60 @@ document.addEventListener('DOMContentLoaded', () => {
         const pipe = document.getElementById('pipe');
         let onPlatform = false;
 
-        if (pipe) {
-            const charRect = character.getBoundingClientRect();
-            const pipeRect = pipe.getBoundingClientRect();
-            
-            // 1. Horizontal Check
-            if (charRect.right > pipeRect.left + 15 && charRect.left < pipeRect.right - 15) {
-                
-                // 2. Vertical Check (Falling onto pipe)
-                // Calculate Pipe Top in % relative to HERO SECTION height
+        // Helper: Check landing on top of an element
+        function checkLanding(char, platform, tolerance = 10) {
+             const charRect = char.getBoundingClientRect();
+             const platRect = platform.getBoundingClientRect();
+             
+             // Horizontal Check
+             if (charRect.right > platRect.left + 15 && charRect.left < platRect.right - 15) {
+                // Vertical Check (Falling onto platform)
                 const heroRect = heroSection.getBoundingClientRect();
+                // Visual top (approximated, since some elements involve transform/clipping)
+                const platTopFromBottomPx = heroRect.bottom - platRect.top;
+                const platTopPct = (platTopFromBottomPx / heroRect.height) * 100;
                 
-                // Pipe Element is the stem. rim is ::before, top: -60px.
-                // visualTop is pipeRect.top - 60.
-                // Distance from bottom of screen = heroRect.bottom - visualTop
-                const pipeTopFromBottomPx = heroRect.bottom - (pipeRect.top - 60);
-                const pipeTopPct = (pipeTopFromBottomPx / heroRect.height) * 100;
+                // Effective platform height for standing (adjust for visual style)
+                // For pipe: rect.top is correct. For blocks: rect.top.
                 
-                // Compare charY (feet position %) with pipeTopPct
-                // Tolerance: Increased to 10% for easier landing
-                if (Math.abs(charY - pipeTopPct) < 10 && velocityY <= 0) {
+                // Compare charY (feet position %) with platTopPct
+                if (Math.abs(charY - platTopPct) < tolerance && velocityY <= 0) {
+                     return platTopPct;
+                }
+             }
+             return null;
+        }
+
+        if (pipe) {
+             // Pipe rim offset adjustment (-40px visually)
+             const charRect = character.getBoundingClientRect();
+             const pipeRect = pipe.getBoundingClientRect();
+             if (charRect.right > pipeRect.left + 15 && charRect.left < pipeRect.right - 15) {
+                 const heroRect = heroSection.getBoundingClientRect();
+                 const pipeVisualTopFromBottomPx = heroRect.bottom - (pipeRect.top - 40);
+                 const pipeTopPct = (pipeVisualTopFromBottomPx / heroRect.height) * 100;
+                 // Note: Logic duplicated slightly for custom pipe rim offset
+                 if (Math.abs(charY - pipeTopPct) < 10 && velocityY <= 0) {
                     onPlatform = true;
-                    charY = pipeTopPct; // Snap to top
+                    charY = pipeTopPct; 
+                    velocityY = 0;
+                    isJumping = false;
+                 }
+             }
+        }
+        
+        // Check Mystery Blocks (Standable)
+        [mysteryBlock, mysteryBlock2].forEach(block => {
+            if (block && !onPlatform) {
+                const landingY = checkLanding(character, block);
+                if (landingY !== null) {
+                    onPlatform = true;
+                    charY = landingY;
                     velocityY = 0;
                     isJumping = false;
                 }
             }
-        }
+        });
 
         // Apply Velocity if not stuck on platform
         if (!onPlatform) {
@@ -271,16 +328,19 @@ document.addEventListener('DOMContentLoaded', () => {
             isJumping = false;
         }
 
-        // Apply Styles
-        let transform = `translateX(-50%)`;
-        if (!facingRight) transform += ` scaleX(-1)`;
-        if (keys.ArrowDown) transform += ` scaleY(0.7) translateY(30%)`; 
+        // Apply Styles - ONLY if not animating (piping/teleporting)
+        if (!character.dataset.piping && !character.dataset.teleporting) {
+            let transform = `translateX(-50%)`;
+            if (!facingRight) transform += ` scaleX(-1)`;
+            if (keys.ArrowDown) transform += ` scaleY(0.7) translateY(30%)`; 
 
-        character.style.transform = transform;
-        character.style.left = `${charX}%`;
-        character.style.bottom = `${charY}%`;
+            character.style.transform = transform;
+            character.style.left = `${charX}%`;
+            character.style.bottom = `${charY}%`;
+        }
 
-        // Check Collisions
+        // Check Collisions (Items/Interactions)
+        // Note: We need to handle block hitting from bottom separately in main checkInteractions logic
         if (typeof checkInteractions === 'function') {
             checkInteractions();
         }
@@ -292,45 +352,47 @@ document.addEventListener('DOMContentLoaded', () => {
     let touchStartX = 0;
     let touchStartY = 0;
     
-    heroSection.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-    }, {passive: false});
+    if (heroSection) {
+        heroSection.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, {passive: false});
 
-    heroSection.addEventListener('touchmove', (e) => {
-        if (!gameStarted) return;
-        e.preventDefault(); 
-        const touchX = e.changedTouches[0].screenX;
-        const touchY = e.changedTouches[0].screenY;
-        
-        const diffX = touchX - touchStartX;
-        const diffY = touchY - touchStartY;
+        heroSection.addEventListener('touchmove', (e) => {
+            if (!gameStarted) return;
+            e.preventDefault(); 
+            const touchX = e.changedTouches[0].screenX;
+            const touchY = e.changedTouches[0].screenY;
+            
+            const diffX = touchX - touchStartX;
+            const diffY = touchY - touchStartY;
 
-        if (Math.abs(diffX) > 30) {
-            if (diffX > 0) keys.ArrowRight = true;
-            else keys.ArrowLeft = true;
-        } else {
-            keys.ArrowRight = false;
+            if (Math.abs(diffX) > 30) {
+                if (diffX > 0) keys.ArrowRight = true;
+                else keys.ArrowLeft = true;
+            } else {
+                keys.ArrowRight = false;
+                keys.ArrowLeft = false;
+            }
+
+            // Swipe Up (Jump)
+            if (diffY < -50 && !isJumping) { 
+                 keys.ArrowUp = true;
+                 setTimeout(() => keys.ArrowUp = false, 300);
+            }
+
+            // Swipe Down (Crouch / Enter Pipe)
+            if (diffY > 50) {
+                keys.ArrowDown = true;
+                setTimeout(() => keys.ArrowDown = false, 500);
+            }
+        }, {passive: false});
+
+        heroSection.addEventListener('touchend', (e) => {
             keys.ArrowLeft = false;
-        }
-
-        // Swipe Up (Jump)
-        if (diffY < -50 && !isJumping) { 
-             keys.ArrowUp = true;
-             setTimeout(() => keys.ArrowUp = false, 300);
-        }
-
-        // Swipe Down (Crouch / Enter Pipe)
-        if (diffY > 50) {
-            keys.ArrowDown = true;
-            setTimeout(() => keys.ArrowDown = false, 500);
-        }
-    }, {passive: false});
-
-    heroSection.addEventListener('touchend', (e) => {
-        keys.ArrowLeft = false;
-        keys.ArrowRight = false;
-    });
+            keys.ArrowRight = false;
+        });
+    }
 
     // --- Map Switching Logic ---
     const mapNodes = document.querySelectorAll('.map-node');
@@ -356,6 +418,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Scroll back to Hero Section
             heroSection.scrollIntoView({ behavior: 'smooth' });
 
+            // Hide Character during transition (prevent flicker)
+            character.style.opacity = '0';
+
             // Trigger Pipe Exit Animation
             setTimeout(() => {
                 exitPipeAnimation();
@@ -367,6 +432,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!document.getElementById('pipe')) return;
         const pipe = document.getElementById('pipe');
         
+        // 0. Set Animating State to prevent gameLoop interference
+        character.dataset.piping = "true";
+        character.dataset.teleporting = "true"; // Double safety
+
         // 1. Position Character Inside Pipe (Deep)
         const pipeCenter = pipe.offsetLeft + pipe.offsetWidth / 2;
         const screenW = heroSection.offsetWidth;
@@ -374,58 +443,80 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Disable transitions for instant reset
         character.style.transition = 'none';
+        character.style.opacity = '1'; // Show Character
         character.style.left = `${centerPct}%`;
         character.style.bottom = '-50%'; // Deep inside pipe
-        character.style.zIndex = '3'; 
+        character.style.zIndex = '5'; // BEHIND PIPE (pipe is 10)
         character.style.transformOrigin = 'bottom center';
         
         // Thin and Long - Set initial state
-        character.style.transform = 'translateX(-50%) scaleX(0.5) scaleY(1.5)'; 
+        character.style.transform = 'translateX(-50%) scaleX(0.4) scaleY(1.8)'; 
         
-        // Force Reflow to ensure browser registers the thin state before transition
+        // Force Reflow
         void character.offsetWidth;
         
         // 2. Animate Up (Slide) - Step 1
         playGameSound('warp');
         
-        // Calculate Top of Pipe (Rim) in %
+        // Calculate Top of Pipe (Rim)
         const heroRect = heroSection.getBoundingClientRect();
         const pipeRect = pipe.getBoundingClientRect();
-        // Pipe is at bottom: 20%. Height is 200px. Rim is 60px on top.
-        // Visual Top = Pipe Bottom (20%) + height(200px) + rim(60px)
-        // BUT bounding client rect 'top' is the top of the 200px element.
-        // So visual top is pipeRect.top - 60px.
-        const pipeVisualTopFromBottomPx = heroRect.bottom - (pipeRect.top - 60);
+        // Pipe visual top is pipeRect.top - 40px (rim offset visually)
+        const pipeVisualTopFromBottomPx = heroRect.bottom - (pipeRect.top - 40);
         const pipeTopPct = (pipeVisualTopFromBottomPx / heroRect.height) * 100;
 
         requestAnimationFrame(() => {
-            character.style.transition = 'bottom 1s ease-in-out';
+            character.style.transition = 'bottom 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
             character.style.bottom = `${pipeTopPct}%`; // Slide to Rim Top
             
-            // 3. Animate Restore (Unscale) - Step 2 (After Slide finishes)
+            // 3. Animate Restore (Unscale & Pop) - Step 2 (After Slide finishes)
             setTimeout(() => {
-                 character.style.transition = 'transform 0.5s ease-out';
+                 character.style.transition = 'transform 0.4s ease-out';
                  character.style.transform = 'translateX(-50%) scale(1)';
-            }, 1000); // Wait 1s for slide
+                 
+                 // Restore Z-Index (Pop out)
+                 character.style.zIndex = '20'; 
+                 
+                 // Little hop effect
+                 character.style.bottom = `${pipeTopPct + 5}%`;
+                 setTimeout(() => {
+                     character.style.transition = 'bottom 0.2s ease-out';
+                     character.style.bottom = `${pipeTopPct}%`;
+                 }, 200);
+
+            }, 1200); // 1.2s slide time
             
             // 4. Cleanup - Step 3 (After Unscale finishes)
             setTimeout(() => {
                  character.style.zIndex = ''; 
                  character.style.transition = '';
                  character.style.transformOrigin = '';
+                 character.style.transform = '';
+                 
                  // Ensure physics knows we are there
                  charX = centerPct;
                  charY = pipeTopPct; 
-                 velocityY = 2; // Little hop out
-            }, 1500); // 1s + 0.5s
+                 velocityY = 0; 
+                 
+                 delete character.dataset.piping;
+                 delete character.dataset.teleporting;
+            }, 1800); // 1.2s + 0.6s
         });
     }
 
     // --- Game Elements Logic ---
     const mysteryBlock = document.getElementById('mystery-block');
+    const mysteryBlock2 = document.getElementById('mystery-block-2'); // New Block
     const star = document.getElementById('star');
+    const mushroom = document.getElementById('mushroom'); // Poison Mushroom
     const pipe = document.getElementById('pipe');
     const portal = document.getElementById('portal');
+
+    // Star Physics State
+    let starX = 45; // Initial %
+    let starY = 45; // Initial %
+    let starSpeed = 0.5; // Movement speed
+    let starRunning = false;
 
     // Enhanced Collision Detection
     function checkCollision(char, el) {
@@ -490,10 +581,11 @@ document.addEventListener('DOMContentLoaded', () => {
                      setTimeout(() => mysteryBlock.classList.remove('bounce'), 200);
 
                      // Reveal Star
-                     if (star) {
+                     if (star && !starRunning) {
                          setTimeout(() => playGameSound('coin'), 100); // SOUND
                          star.classList.remove('hidden');
                          star.classList.add('popped');
+                         starRunning = true; // Start running
                      }
                      
                      velocityY = -2; 
@@ -501,19 +593,88 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // --- Star Collection (BODY) ---
-        if (star && star.classList.contains('popped') && !star.classList.contains('collected')) {
-            if (checkCollision(character, star)) {
-                playGameSound('powerup'); // SOUND
-                star.classList.add('collected');
-                console.log("Star Collected! Growing!");
-                character.classList.add('giant');
+        // --- Mystery Block 2 Logic (Mushroom) ---
+        if (mysteryBlock2) {
+            const col = checkCollision(character, mysteryBlock2);
+            if (col) {
+                 const charRect = character.getBoundingClientRect();
+                 const blockRect = mysteryBlock2.getBoundingClientRect();
+                 const charCenterY = charRect.top + charRect.height / 2;
+                 const blockCenterY = blockRect.top + blockRect.height / 2;
+                 
+                 const isBelow = charCenterY > blockCenterY;
+                 
+                 if (isBelow && velocityY > -5 && !mysteryBlock2.classList.contains('empty')) {
+                      playGameSound('bump');
+                      mysteryBlock2.classList.add('empty');
+                      mysteryBlock2.classList.add('bounce');
+                      setTimeout(() => mysteryBlock2.classList.remove('bounce'), 200);
+
+                      // Reveal Mushroom
+                      if (mushroom) {
+                          setTimeout(() => playGameSound('powerup'), 100); // sound
+                          mushroom.classList.remove('hidden');
+                          mushroom.classList.add('popped');
+                      }
+                      velocityY = -2;
+                 }
             }
         }
 
+        // --- Star Logic (Movement & Collection) ---
+        if (star && starRunning && !star.classList.contains('collected')) {
+            // Apply Physics (Run Right)
+            starX += starSpeed;
+            if (starX > 95) starSpeed = -starSpeed; // Bounce off right wall
+            if (starX < 0) starSpeed = -starSpeed; // Bounce off left wall
+            
+            star.style.left = `${starX}%`;
+            // starY could bounce too? simplified for now.
+            
+            if (checkCollision(character, star)) {
+                playGameSound('powerup');
+                star.classList.add('collected');
+                console.log("Star Collected! Growing!");
+                
+                character.classList.remove('tiny'); // Remove poison
+                character.classList.add('giant');
+                
+                starRunning = false;
+            }
+        }
+
+        // --- Mushroom Collection (Poison) ---
+        if (mushroom && mushroom.classList.contains('popped') && !mushroom.classList.contains('collected')) {
+             if (checkCollision(character, mushroom)) {
+                 playGameSound('bump'); // Bad sound?
+                 mushroom.classList.add('collected');
+                 mushroom.style.display = 'none'; // Poof
+                 console.log("Mushroom Eaten! Shrinking!");
+                 
+                 character.classList.remove('giant'); // Remove star power
+                 character.classList.add('tiny');
+             }
+        }
+
         // --- Portal (BODY) ---
-        if (portal && checkCollision(character, portal)) {
-            if (!character.dataset.teleporting) {
+        if (portal && !character.dataset.teleporting) {
+            const charRect = character.getBoundingClientRect();
+            const portalRect = portal.getBoundingClientRect();
+            
+            const charCenterX = charRect.left + charRect.width / 2;
+            const charCenterY = charRect.top + charRect.height / 2;
+            
+            const portalCenterX = portalRect.left + portalRect.width / 2;
+            const portalCenterY = portalRect.top + portalRect.height / 2;
+            
+            // Distance Calculation (hypotenuse)
+            const dist = Math.sqrt(Math.pow(charCenterX - portalCenterX, 2) + Math.pow(charCenterY - portalCenterY, 2));
+            
+            // Threshold: 35% of portal width (Assume circular hitbox)
+            // Portal width is 300px, so ~105px radius collision zone.
+            const hitRadius = portalRect.width * 0.35; 
+            
+            if (dist < hitRadius) {
                 character.dataset.teleporting = "true";
                 portal.style.transform = "scale(1.2)";
                 
@@ -551,19 +712,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         character.style.left = `${charX}%`;
                         
                         // 2. Animation Sequence
-                        character.style.zIndex = 3; 
+                        character.style.zIndex = 5; // Behind Pipe (z-index 10)
                         character.style.transformOrigin = "bottom center";
                         
-                        // Step 1: Squish (Thin/Long)
-                        character.style.transition = "transform 0.5s ease-in-out";
-                        character.style.transform = "translateX(-50%) scaleX(0.5) scaleY(1.5)"; 
+                        // Step 1: Squish (Thin/Long) - Immediate start
+                        character.style.transition = "transform 0.4s ease-in, bottom 1.0s linear";
+                        character.style.transform = "translateX(-50%) scaleX(0.4) scaleY(1.8)"; 
                         
-                        // Step 2: Slide Deep (After Squish)
+                        // Step 2: Slide Deep (Simultaneous with squish)
                         setTimeout(() => {
-                             character.style.transition = "bottom 1.0s ease-in-out";
                              character.style.bottom = "-50%"; // Deep down
-                        }, 500); // Wait 0.5s for squish
-
+                        }, 50); // Small delay to ensure transition triggers
+                        
                         const transitionOverlay = document.getElementById('pipe-transition');
                         
                         // Step 3: Trigger Navigate (After Slide)
@@ -573,7 +733,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             setTimeout(() => {
                                 // 4. Scroll & Reset
                                 const mapSection = document.getElementById('explore');
-                                mapSection.scrollIntoView({ behavior: 'auto' }); 
+                                if (mapSection) mapSection.scrollIntoView({ behavior: 'auto' }); 
                                 
                                 // Reset Character
                                 character.style.transition = ""; 
@@ -585,17 +745,24 @@ document.addEventListener('DOMContentLoaded', () => {
                                 character.style.transform = "translateX(-50%) scale(1)";
 
                                 setTimeout(() => {
-                                    transitionOverlay.classList.remove('active');
+                                    if (transitionOverlay) transitionOverlay.classList.remove('active');
                                 }, 500);
 
                             }, 800); 
-                        }, 1500); // 0.5s squish + 1.0s slide 
+                        }, 1200); // 1.2s total animation time
                     }
                 }
             }
         }
     }
     
+    // --- Mobile Optimization: Force Scroll to Top ---
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            window.scrollTo(0, 0);
+        }, 100); 
+    });
+
     // Initial Call
     gameLoop();
 });

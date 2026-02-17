@@ -129,7 +129,9 @@ body {
 .hero-section {
     position: relative;
     width: 100%;
-    height: 100vh;
+    width: 100%;
+    min-height: 100vh; /* Fallback */
+    height: 100dvh; /* Mobile viewport fix */
     background: url('../assets/images/hero-background.png') no-repeat center center;
     background-size: cover;
     display: flex;
@@ -209,8 +211,9 @@ body {
     bottom: 20%;
     left: 50%;
     transform: translateX(-50%);
-    width: 256px; /* 128px * 2 */
-    height: 256px; /* 128px * 2 */
+    /* 360/540 aspect ratio ~= 0.666. 256 * 0.666 = 170.66 */
+    width: 171px; /* Adjusted for aspect ratio */
+    height: 256px; 
     background: url('../assets/images/character-silhouette.gif') no-repeat center bottom;
     background-size: contain;
     z-index: 20;
@@ -543,5 +546,90 @@ body {
 
     .keyboard-guide {
         display: none; /* Hide keyboard guide on mobile where we have OS controls */
+    }
+
+    .d-pad {
+        display: none !important; /* Hide Arrows, use swipes */
+    }
+
+    /* Mobile Scaling */
+    .character {
+        width: 114px; /* 171 / 1.5 */
+        height: 171px; /* 256 / 1.5 */
+        bottom: 25%; /* Slightly higher to avoid controls */
+    }
+    
+    .character.giant {
+        width: 340px; 
+        height: 340px;
+    }
+    
+    /* Scale down game elements */
+    .element {
+        transform: scale(0.8);
+        transform-origin: bottom center;
+    }
+    
+    .pixel-pipe {
+        height: calc(15% + 150px) !important;
+    }
+    
+    /* Adjust map grid to single column */
+    .map-grid {
+        grid-template-columns: 1fr;
+        max-width: 300px;
+    }
+    
+    /* Mobile - Prevent crowding */
+    .pixel-portal {
+        width: 120px !important; 
+        height: 120px !important;
+        left: 5% !important;
+        bottom: 15% !important;
+    }
+    
+    .character {
+        left: 65%; /* Shift right */
+    }
+    
+    .pixel-pipe {
+        left: 85% !important; /* Shift right */
+    }
+
+    #mystery-block {
+        left: 55% !important;
+        bottom: 55% !important;
+    }
+
+    #star {
+        left: 55% !important;
+        bottom: 55% !important;
+    }
+
+    #mystery-block-2 {
+        left: 25% !important;
+        bottom: 55% !important;
+    }
+
+    #mushroom {
+        left: 25% !important;
+        bottom: 55% !important;
+    }
+    
+    /* Social Buttons - Compact Row */
+    .social-links {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: nowrap;
+    }
+    
+    .social-links .pixel-btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        width: auto;
+        min-width: 0;
+        white-space: nowrap;
     }
 }
